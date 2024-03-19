@@ -1,0 +1,21 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>7-11分店資訊</title>
+</head>
+<body>
+    <textarea id="storeInfo" rows="10" cols="50">7-11分店資訊將顯示在這裡...</textarea>
+    <button onclick="fetchStores()">獲取7-11分店資訊</button>
+
+    <script>
+        async function fetchStores() {
+            const response = await fetch('/fetch-stores');
+            const data = await response.json();
+            document.getElementById('storeInfo').innerText = data.data;
+        }
+    </script>
+</body>
+</html>
