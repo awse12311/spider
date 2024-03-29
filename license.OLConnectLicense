@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OLLicense xmlns="http://objectiflune.com/licensing/license" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="1.0.0.0">
+	<Identity>
+		<EarliestCareDate>9999-12-31</EarliestCareDate>
+	</Identity>
+	<HardwareIdentifier source="machine" value="5000-558C-0000-080F">
+		<OLConnect name="PlanetPress Connect" edition="PlanetPress">
+			<Designer name="PlanetPress Connect Designer" licenseType="reseller" licenseRenewalMode="perpetual" majorVersion="1" minorVersion="0" serialNumber="AU00D-515358-5522" expirationDate="2025-03-28" issueDate="2024-03-28">
+				<DataMapper instances="4" speed="250"/>
+				<MergeEngine.Paginated instances="4" speed="250"/>
+				<MergeEngine.Email instances="4" speed="250" email="test"/>
+				<MergeEngine.Web instances="4" speed="250" network="local"/>
+				<OutputEngine instances="4" speed="250" watermarks="true" optimizedOutput="true" imaging="false">
+					<Outputs.Standard/>
+				</OutputEngine>
+			</Designer>
+			<Server name="PlanetPress Connect Server" licenseType="reseller" licenseRenewalMode="perpetual" majorVersion="1" minorVersion="0" serialNumber="AU00D-515358-5522" expirationDate="2025-03-28" issueDate="2024-03-28">
+				<DataMapper instances="4" speed="250"/>
+				<MergeEngine.Paginated instances="4" speed="250"/>
+				<MergeEngine.Email instances="4" speed="250" email="test"/>
+				<MergeEngine.Web instances="4" speed="250" network="all"/>
+				<OutputEngine instances="4" speed="250" watermarks="true" optimizedOutput="true" imaging="true">
+					<Outputs.Standard/>
+				</OutputEngine>
+				<JobCreation>
+					<Comingling/>
+				</JobCreation>
+			</Server>
+		</OLConnect>
+		<PlanetPress edition="PlanetPress">
+			<Workflow name="PlanetPress Workflow" edition="PlanetPress" licenseType="reseller" licenseRenewalMode="perpetual" majorVersion="8" production="true" watermarks="true" minorVersion="0" serialNumber="AU00D-515358-5522" expirationDate="2025-03-28" issueDate="2024-03-28"/>
+			<Image name="PlanetPress Image" licenseType="reseller" licenseRenewalMode="perpetual" majorVersion="8" watermarks="true" minorVersion="0" serialNumber="AU00D-515358-5522" expirationDate="2025-03-28" issueDate="2024-03-28"/>
+			<Fax name="PlanetPress Fax" licenseType="reseller" licenseRenewalMode="perpetual" majorVersion="8" watermarks="true" minorVersion="0" serialNumber="AU00D-515358-5522" expirationDate="2025-03-28" issueDate="2024-03-28"/>
+			<Search name="PlanetPress Search" licenseType="reseller" licenseRenewalMode="perpetual" majorVersion="8" watermarks="true" minorVersion="0" serialNumber="AU00D-515358-5522" expirationDate="2025-03-28" issueDate="2024-03-28"/>
+		</PlanetPress>
+		<TacticalDevelopment>
+			<ConnectPrinterDriver LicenseMode="perpetual">
+				<Domains>
+					<Domain users="3">*</Domain>
+				</Domains>
+			</ConnectPrinterDriver>
+		</TacticalDevelopment>
+	</HardwareIdentifier>
+<Signature>5872D6900B618B2DB54DA4BA55449FBB64F2D85447F9C8EE2FC422ED8ABAABA14CC72AE6883128B85B4054899ABCFEF7FE83B17364FBAF85457140420F4D920979B5439C6FF768F0B3FAFE65AEDF1146042F5DD5DEC4E3961315189B0F17B9465F4E5221413DAFC00A352D3CDB73F7EFC5BC521AFF4C7A422178498B77F8E1A716327A539B8F229A0E3DDFC2524D6DE216E751CCF82F549AECA9994950F37A6DC74D681BB64F3BC57F324E746D253E7B175F6DEDBE1A383A2D7D21FA1DD8E47B5C1E3C615D8EBD89BE21C707F240609309DB7FE55F27470E783A3E7E0345B0ED5D9E95EB72AD862185FEEDABEBF7466173F7B941FCA86709F6010B910C908EF5987E5F2F85AEF7B559956CA3C4DB515F7A5807FE23AE022235C557FADF583F9611C862933CED1C2418E4140E5FA963F48F6C97401E83E1AA32B42D2045C84D88BE7EF42D6374CF3B5EE0DA134EEE3250FFF41FD412CA4A2E403F74438D917766BCB611BBD3506963E0B74831F7ECCA58C09900432301B8EC96941AA9203E153D</Signature></OLLicense>
