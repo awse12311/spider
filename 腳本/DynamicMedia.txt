@@ -1,0 +1,6 @@
+var section = merge.template.contexts.PRINT.sections["Section 1"]
+var brand = record.fields.brand
+
+if( brand ) {
+	section.sheetConfig.positions.all.media = `Media ${brand}`
+}

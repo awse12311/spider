@@ -1,0 +1,8 @@
+let province = record.fields.province
+// Selectively load content from the HTML snippet,
+// by specifying an element ID (for example: '#ON')
+// 選擇性地從 HTML 片段載入內容，
+// 透過指定元素 ID（例如：'#ON'）
+
+let office = loadhtml('snippets/offices.html', '#' + province )
+results.html( office );

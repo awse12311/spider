@@ -1,0 +1,7 @@
+// Add the value of the brand field as CSS class name to the Subject.
+// The color of the text is in the style rules located in the context_all_styles.css.
+
+// 將brand欄位的值作為CSS類別名稱加入Subject。
+// 文字的顏色位於 context_all_styles.css 中的樣式規則中。
+
+results.addClass( record.fields.brand );

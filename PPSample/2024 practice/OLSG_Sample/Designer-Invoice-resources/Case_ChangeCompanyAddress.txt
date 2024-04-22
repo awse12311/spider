@@ -1,0 +1,17 @@
+var office="";
+
+switch (record.fields.StateAbbrev) {
+	case "ON":
+		office = loadhtml("snippets/olsg_address.html", "#ON");
+		break;
+	case "NS":
+		office = loadhtml("snippets/olsg_address.html", "#NS");
+		break;
+	case "SK":
+		office = loadhtml("snippets/olsg_address.html", "#SK");
+		break;
+	default:
+		office = loadhtml("snippets/olsg_address.html", "#QC");
+}
+
+results.html(office);

@@ -1,0 +1,27 @@
+var office="";
+
+switch (record.fields.province) {
+	case "AB":
+		office = loadhtml("snippets/olsg_address.html", "#AB");
+		break;
+	case "ON":
+		office = loadhtml("snippets/olsg_address.html", "#ON");
+		break;
+	case "NS":
+		office = loadhtml("snippets/olsg_address.html", "#NS");
+		break;
+	case "BC":
+		office = loadhtml("snippets/olsg_address.html", "#BC");
+		break;
+	case "SK":
+		office = loadhtml("snippets/olsg_address.html", "#SK");
+		break;
+	case "NB":
+		office = loadhtml("snippets/olsg_address.html", "#NB");
+		break;
+	default:
+		office = loadhtml("snippets/olsg_address.html", "#QC");
+	
+}
+
+results.html(office);

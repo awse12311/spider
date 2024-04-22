@@ -1,0 +1,15 @@
+Handlebars.registerHelper('today', function () {
+	let today = new Date();
+	return formatter.dateMedium( today )
+});
+
+
+Handlebars.registerHelper('date', function() {
+	let today = new Date();
+	return formatter.dateLong( today );
+});
+
+Handlebars.registerHelper('year', function() {
+	let today = new Date();
+	return today.getFullYear();
+});

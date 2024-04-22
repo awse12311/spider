@@ -1,0 +1,9 @@
+{{#if additionalNameInsured}}
+	<ul>
+		{{#each additionalNameInsured}}
+		<li>{{firstName}} {{lastName}}, {{date birthDay}}</li>
+		{{/each}}
+	</ul>
+{{else}}
+	<p>The Named person: {{firstName}} {{lastName}}, {{data birthDay}}
+{{/if}}
