@@ -1,18 +1,41 @@
-// 获取源文件夹路径，假设本地变量名为 SourceFolderPath
-var sourceFolderPath = WScript.CreateObject("Scripting.FileSystemObject").GetStandardStream(0).ReadToEnd();
 
-// 获取目标文件路径，假设本地变量名为 TargetFilePath
-var targetFilePath = WScript.CreateObject("Scripting.FileSystemObject").GetStandardStream(1).ReadToEnd();
+var source_root = "C:\\Users\\mark.chang\\Documents\\Project\\永信藥品\\test_out\\DataGroup\\";
+// Get the source folder path, assuming the local variable name is SourceFolderPath
+var CustNumber = Watch.GetVariable("CustNumber");
+var SammonsNumber = Watch.GetVariable("SammonsNumber");
+var OrderNumber = Watch.GetVariable("OrderNumber");
+var DeliveryNumber = Watch.GetVariable("DeliveryNumber");
 
-// 创建文件系统对象
+
+var Source = source_root;
+var CTarget = source_root + CustNumber;
+var STarget = source_root + CustNumber + "\\" + SammonsNumber;
+    // Create a file system object
 var fso = new ActiveXObject("Scripting.FileSystemObject");
+    // Get the source folder object
+var sourceFolder = fso.GetFolder(Source);
+var CTargetFolder,STargetFolder ;
+    // Get the target folder path, assuming the local variable name is TargetFolderPath
+    if(!fso.FolderExists(CTarget)){
+        fso.CreateFolder(CTarget);
+        CTargetFolder = fso.GetFolder(CTarget);
+    }else{
+        CTargetFolder = fso.GetFolder(CTarget);
+    }
 
-// 获取源文件夹对象
-var sourceFolder = fso.GetFolder(sourceFolderPath.trim());
+    if(!fso.FolderExists(STarget)){
+        fso.CreateFolder(STarget);
+        STargetFolder = fso.GetFolder(STarget);
+    }else{
+        STargetFolder = fso.GetFolder(STarget);
+    }
 
-// 获取目标文件夹中所有PDF文件
+
+
+var targetFilePath = "C:\\Users\\mark.chang\\Documents\\Project\\永信藥品\\test_out\\DataGroup\\GroupPDF";
+
 var pdfFiles = new Array();
-var fileEnum = new Enumerator(sourceFolder.Files);
+var fileEnum = new Enumerator(STargetFolder.Files);
 for (; !fileEnum.atEnd(); fileEnum.moveNext()) {
     var file = fileEnum.item();
     if (fso.GetExtensionName(file.Path).toLowerCase() == "pdf") {
@@ -20,16 +43,13 @@ for (; !fileEnum.atEnd(); fileEnum.moveNext()) {
     }
 }
 
-// 创建一个新的PDF文件对象
 var pdfMerger = new ActiveXObject("PdfFactory.PdfFile");
 
-// 遍历PDF文件列表，逐个合并到目标文件中
 for (var i = 0; i < pdfFiles.length; i++) {
     pdfMerger.Append(pdfFiles[i]);
 }
 
-// 保存合并后的PDF文件到目标文件中
 pdfMerger.Save(targetFilePath.trim());
 
-// 输出合并完成的信息
-WScript.Echo("PDF文件合并完成。合并后的文件保存在：" + targetFilePath.trim());
+
+

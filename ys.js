@@ -1,28 +1,76 @@
+var source_root = "C:\\Users\\mark.chang\\Documents\\Project\\永信藥品\\test_out\\Step1\\";
+// Get the source folder path, assuming the local variable name is SourceFolderPath
+var CustNumber = Watch.GetVariable("CustNumber");
+var SammonsNumber = Watch.GetVariable("SammonsNumber");
+var OrderNumber = Watch.GetVariable("OrderNumber");
+var DeliveryNumber = Watch.GetVariable("DeliveryNumber");
 
-// 创建一个 XMLHttpRequest 对象
-var xhr = new XMLHttpRequest();
+var Source = source_root + "C" + CustNumber;
+var Target = Source + "\\S" + SammonsNumber;
 
-// 设置请求方法和 URL，替换 'localfile.js' 为您的本地 JavaScript 文件的路径
-xhr.open('GET', 'file:///path/to/your/localfile.js', true);
 
-// 设置请求完成后的回调函数
-xhr.onload = function() {
-  // 当请求完成时
-  if (xhr.status >= 200 && xhr.status < 300) {
-    // 如果请求成功
-    var responseData = xhr.responseText; // 获取响应数据
-    // 在这里处理响应数据，例如将其传递给工作流程的下一个步骤
-    Watch.SetVariable("ExternalData", responseData); // 将响应数据保存到工作流程变量中
-  } else {
-    // 如果请求失败，可以进行相应的处理
-    console.error('请求失败: ' + xhr.status);
-  }
-};
+// Create a file system object
+var fso = new ActiveXObject("Scripting.FileSystemObject");
 
-// 设置请求出错时的回调函数
-xhr.onerror = function() {
-  console.error('请求出错');
-};
+// Get the source folder object
+var sourceFolder = fso.GetFolder(Source);
+// Get the target folder path, assuming the local variable name is TargetFolderPath
+if (!fso.FolderExists(Target)) {
+    fso.CreateFolder(Target);
+    var TargetFolder = fso.GetFolder(Target);
+} else {
+    var TargetFolder = fso.GetFolder(Target);
+}
 
-// 发送请求
-xhr.send();
+// Iterate through the files in the source folder
+var files = new Enumerator(sourceFolder.files);
+for (; !files.atEnd(); files.moveNext()) {
+    var file = files.item();
+
+    // Get the file name
+    var fileName = file.Name;
+
+    // Check if the file name contains a specific keyword, using "keyword" as an example here
+    Watch.Log("Get File P4_C" + CustNumber + "_O" + OrderNumber + "_D" + DeliveryNumber + ".pdf", 3);
+    if (fileName.indexOf("P4_C" + CustNumber + "_O" + OrderNumber + "_D" + DeliveryNumber) !== -1) {
+        // Create the target subfolder path, assuming the subfolder name is "KeywordFolder"
+        var targetSubFolderPath = TargetFolder;
+
+        // Check if the target subfolder exists, if not, create it
+        if (!fso.FolderExists(targetSubFolderPath)) {
+            fso.CreateFolder(targetSubFolderPath);
+        }
+
+        // Move the file to the target subfolder
+        file.Move(targetSubFolderPath + "\\" + fileName);
+        Watch.Log("Move File P4_C" + CustNumber + "_O" + OrderNumber + "_D" + DeliveryNumber + ".pdf", 3);
+    }
+    Watch.Log("Get File P5_C" + CustNumber + "_S" + SammonsNumber + "_D" + DeliveryNumber + ".pdf to " + targetSubFolderPath, 3);
+    if (fileName.indexOf("P5_C" + CustNumber + "_S" + SammonsNumber + "_D" + DeliveryNumber) !== -1) {
+        // Create the target subfolder path, assuming the subfolder name is "KeywordFolder"
+        var targetSubFolderPath = TargetFolder;
+
+        // Check if the target subfolder exists, if not, create it
+        if (!fso.FolderExists(targetSubFolderPath)) {
+            fso.CreateFolder(targetSubFolderPath);
+        }
+
+        // Move the file to the target subfolder
+        file.Move(targetSubFolderPath + "\\" + fileName);
+        Watch.Log("Move File P5_C" + CustNumber + "_S" + SammonsNumber + "_D" + DeliveryNumber + ".pdf to " + targetSubFolderPath, 3);
+    }
+    Watch.Log("Get File P6_C" + CustNumber + "_S" + SammonsNumber + "_D" + DeliveryNumber + ".pdf to " + targetSubFolderPath, 3);
+    if (fileName.indexOf("P6_C" + CustNumber + "_S" + SammonsNumber + "_D" + DeliveryNumber) !== -1) {
+        // Create the target subfolder path, assuming the subfolder name is "KeywordFolder"
+        var targetSubFolderPath = TargetFolder;
+
+        // Check if the target subfolder exists, if not, create it
+        if (!fso.FolderExists(targetSubFolderPath)) {
+            fso.CreateFolder(targetSubFolderPath);
+        }
+
+        // Move the file to the target subfolder
+        file.Move(targetSubFolderPath + "\\" + fileName);
+        Watch.Log("Move File P6_C" + CustNumber + "_S" + SammonsNumber + "_D" + DeliveryNumber + ".pdf to " + targetSubFolderPath, 3);
+    }
+}
