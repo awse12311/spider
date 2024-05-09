@@ -28,3 +28,26 @@ if (fso.FileExists(sourceFile)) {
 } else {
     WScript.Echo("文件不存在。");
 }
+
+
+
+var sourceFile = "C:\\Path\\To\\Your\\File.pdf"; // 列印生成的 PDF 文件路徑
+var optimizedFile = "C:\\Path\\To\\Your\\Optimized\\File.pdf"; // 優化後的 PDF 文件路徑
+
+var shell = new ActiveXObject("WScript.Shell");
+var fso = new ActiveXObject("Scripting.FileSystemObject");
+
+if (fso.FileExists(sourceFile)) {
+    // 設置 Ghostscript 的路徑
+    var ghostscriptPath = "C:\\Path\\To\\Ghostscript\\bin\\gswin64c.exe";
+
+    // 設置優化命令
+    var optimizeCommand = '"' + ghostscriptPath + '" -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/prepress -dNOPAUSE -dBATCH -sOutputFile="' + optimizedFile + '" "' + sourceFile + '"';
+
+    // 執行優化命令
+    shell.Run(optimizeCommand, 0, true);
+
+    WScript.Echo("PDF 文件已優化並保存到指定目錄。");
+} else {
+    WScript.Echo("PDF 文件不存在。");
+}
