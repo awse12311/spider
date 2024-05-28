@@ -9,21 +9,40 @@ namespace YunShinApp.Models
         {
         }
 
+        public DbSet<YunShin_Basic> YunShin_Basics { get; set; }
+        public DbSet<YunShin_Print> YunShin_Prints { get; set; }
+        public DbSet<YunShin_PrintSub> YunShin_PrintSubs { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<UserDetail> UserDetails { get; set; }
         public DbSet<UserPass> UserPasses { get; set; }
         public DbSet<LoginLog> LoginLogs { get; set; }
-        public DbSet<YunShinBasic> YunShinBasic { get; set; }
-        public DbSet<YunShinPrint> YunShinPrint { get; set; }
-        public DbSet<YunShinPrintSub> YunShinPrintSub { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<UserPass>()
-                .Property(u => u.PasswordHash)
-                .HasColumnType("varbinary(128)");
+            // Configuring relationships for YunShin_Print and YunShin_PrintSub
+            modelBuilder.Entity<YunShin_Print>()
+                .HasMany(p => p.PrintSubs)
+                .WithOne(ps => ps.Print)
+                .HasForeignKey(ps => ps.Print_Id);
+
+            // Configuring relationships for User, UserDetail, UserPass, and LoginLog
+            modelBuilder.Entity<User>()
+                .HasOne(u => u.UserDetail)
+                .WithOne(d => d.User)
+                .HasForeignKey<UserDetail>(d => d.UserId);
+
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.UserPasses)
+                .WithOne(p => p.User)
+                .HasForeignKey(p => p.UserId);
+
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.LoginLogs)
+                .WithOne(l => l.User)
+                .HasForeignKey(l => l.UserId);
         }
     }
 }

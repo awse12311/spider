@@ -18,7 +18,7 @@ public class YunShin_BasicController : Controller
         int pageNumber = page ?? 1;
         int size = pageSize ?? 10;
 
-        var items = await _context.YunShinBasic
+        var items = await _context.YunShin_Basics
             .OrderBy(b => b.Id)
             .Skip((pageNumber - 1) * size)
             .Take(size)

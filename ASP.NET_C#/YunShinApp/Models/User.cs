@@ -18,8 +18,8 @@ namespace YunShinApp.Models
         public DateTime DateM { get; set; } = DateTime.Now;
         public Guid BatchID { get; set; } = Guid.NewGuid();
 
-        public  UserDetail? UserDetail { get; set; }
-        public  ICollection<UserPass>? UserPasses { get; set; }
-        public  ICollection<LoginLog>? LoginLogs { get; set; }
+        public UserDetail UserDetail { get; set; }
+        public ICollection<UserPass> UserPasses { get; set; }
+        public ICollection<LoginLog> LoginLogs { get; set; }
     }
 }
