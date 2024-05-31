@@ -1,0 +1,27 @@
+﻿@page
+@model MyApp.Areas.Identity.Pages.Account.LogoutModel
+@{
+    ViewData["Title"] = "Log out";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div class="alert alert-info" role="alert">
+    You have been logged out. You will be redirected to the login page in 10 seconds.
+</div>
+
+<p>
+    <a id="loginLink" asp-page="/Account/Login" style="display:none;">Click here</a> if you are not redirected automatically.
+</p>
+
+@section Scripts {
+    <script type="text/javascript">
+        setTimeout(function() {
+            window.location.href = '@Url.Page("/Account/Login")';
+        }, 10000); // 10 seconds
+
+        setTimeout(function() {
+            document.getElementById("loginLink").style.display = "block";
+        }, 10000); // Show the login link after 10 seconds
+    </script>
+}

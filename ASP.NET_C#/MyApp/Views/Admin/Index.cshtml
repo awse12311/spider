@@ -1,0 +1,38 @@
+@model IEnumerable<MyApp.Models.ApplicationUser>
+
+@{
+    ViewData["Title"] = "User Management";
+}
+
+<h1>User Management</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Email</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.Email</td>
+                <td>@user.FirstName</td>
+                <td>@user.LastName</td>
+                <td>
+                    @if (user.LockoutEnd == null || user.LockoutEnd < DateTimeOffset.Now)
+                    {
+                        <a href="@Url.Action("DisableAccount", "Admin", new { id = user.Id })" class="btn btn-danger">Disable</a>
+                    }
+                    else
+                    {
+                        <a href="@Url.Action("EnableAccount", "Admin", new { id = user.Id })" class="btn btn-success">Enable</a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
