@@ -15,6 +15,7 @@
 }
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -22,11 +23,13 @@
     <link rel="stylesheet" href="~/lib/bootstrap/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
+
 <body>
     <header>
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <a class="navbar-brand" href="/">MyApp</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
@@ -37,19 +40,21 @@
                             <a class="nav-link" href="#">Hello, @firstName @lastName!</a>
                         </li>
                         <li class="nav-item">
-                            <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" method="post" id="logoutForm">
-                                <button type="submit" class="btn btn-link nav-link" style="cursor:pointer;">Logout</button>
-                            </form>
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <form class="form-inline" asp-area="UserProfile" asp-page="Index" method="post" id="logoutForm">
-                                <button type="submit" class="btn btn-link nav-link" style="cursor:pointer;">UserProfile</button>
+                            <a class="nav-link" asp-controller="UserProfile" asp-action="Index">個人資料</a>
+                        </li>
+                        <li class="nav-item">
+                            <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" method="post"
+                                id="logoutForm">
+                                <button type="submit" class="btn btn-link nav-link" style="cursor:pointer;">登出</button>
                             </form>
                         </li>
-                        @if (User.IsInRole("Admin"))
+                        @if (await UserManager.IsInRoleAsync(user, "Admin"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link" href="@Url.Action("Index", "Admin")">Admin</a>
+                                <a class="nav-link" href="@Url.Action("Index", "Admin")">管理者</a>
                             </li>
                         }
 
@@ -57,10 +62,10 @@
                     else
                     {
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="Identity" asp-page="/Account/Login">Login</a>
+                            <a class="nav-link" asp-area="Identity" asp-page="/Account/Login">登入</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="Identity" asp-page="/Account/Register">Register</a>
+                            <a class="nav-link" asp-area="Identity" asp-page="/Account/Register">註冊</a>
                         </li>
                     }
                 </ul>
@@ -84,5 +89,5 @@
     <script src="~/lib/popper.js/umd/popper.min.js"></script>
     <script src="~/lib/bootstrap/js/bootstrap.min.js"></script>
 </body>
-</html>
 
+</html>

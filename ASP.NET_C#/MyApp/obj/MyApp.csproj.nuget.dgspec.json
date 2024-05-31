@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "c:\\Users\\張駿宇\\Documents\\GitHub\\spider\\ASP.NET_C#\\MyApp\\MyApp.csproj": {}
+    "C:\\Users\\張駿宇\\Documents\\GitHub\\spider\\ASP.NET_C#\\MyApp__\\MyApp.csproj": {}
   },
   "projects": {
-    "c:\\Users\\張駿宇\\Documents\\GitHub\\spider\\ASP.NET_C#\\MyApp\\MyApp.csproj": {
+    "C:\\Users\\張駿宇\\Documents\\GitHub\\spider\\ASP.NET_C#\\MyApp__\\MyApp.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\張駿宇\\Documents\\GitHub\\spider\\ASP.NET_C#\\MyApp\\MyApp.csproj",
+        "projectUniqueName": "C:\\Users\\張駿宇\\Documents\\GitHub\\spider\\ASP.NET_C#\\MyApp__\\MyApp.csproj",
         "projectName": "MyApp",
-        "projectPath": "c:\\Users\\張駿宇\\Documents\\GitHub\\spider\\ASP.NET_C#\\MyApp\\MyApp.csproj",
+        "projectPath": "C:\\Users\\張駿宇\\Documents\\GitHub\\spider\\ASP.NET_C#\\MyApp__\\MyApp.csproj",
         "packagesPath": "C:\\Users\\張駿宇\\.nuget\\packages\\",
-        "outputPath": "c:\\Users\\張駿宇\\Documents\\GitHub\\spider\\ASP.NET_C#\\MyApp\\obj\\",
+        "outputPath": "C:\\Users\\張駿宇\\Documents\\GitHub\\spider\\ASP.NET_C#\\MyApp__\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\張駿宇\\AppData\\Roaming\\NuGet\\NuGet.Config"
