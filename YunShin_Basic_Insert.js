@@ -10,7 +10,6 @@ function Database() {
         Watch.Log("Db--------------------Error opening database connection: " + e, 3);
     }
 }
-
 Database.prototype.close = function () {
     try {
         this.connection.Close();
@@ -19,12 +18,9 @@ Database.prototype.close = function () {
         Watch.Log("Db--------------------Error closing database connection: " + e, 3);
     }
 };
-
 Database.prototype.log = function (message) {
-    Watch.Log(message, 3);
+    Watch.Log("Db--------------------" + message, 3);
 };
-
-//ADODB Funtion Implementation
 Database.prototype.executeQuery = function (query) {
     try {
         var rs = new ActiveXObject("ADODB.Recordset");
@@ -46,7 +42,6 @@ Database.prototype.executeQuery = function (query) {
         return [];
     }
 };
-
 Database.prototype.executeNonQuery = function (query) {
     try {
         var cmd = new ActiveXObject("ADODB.Command");
@@ -58,13 +53,13 @@ Database.prototype.executeNonQuery = function (query) {
         Watch.Log("Db--------------------Error executing nonQuery: " + e + " Query: " + query, 3);
     }
 };
-
 Database.prototype.insert = function (table, data) {
     try {
         var keys = [], values = [];
         for (var key in data) {
             keys.push(key);
             values.push("'" + data[key] + "'");
+            Watch.Log('Db--------------------data:' + key+'_'+data[key], 3);
         }
         var query = "INSERT INTO " + table + " (" + keys.join(", ") + ") VALUES (" + values.join(", ") + ")";
         this.executeNonQuery(query);
@@ -75,18 +70,22 @@ Database.prototype.insert = function (table, data) {
 Database.prototype.update = function (table, data, where) {
     try {
         var set = [];
+        
         for (var key in data) {
             set.push(key + "='" + data[key] + "'");
+            Watch.Log("Db--------------------table Data: " + key + "='" + data[key] + "'", 3);
         }
         var query = "UPDATE " + table + " SET " + set.join(", ") + " WHERE " + where + ";";
         this.executeNonQuery(query);
+        Watch.Log("Db--------------------susses updating table" + table + " Data: " + query, 3);
+
     } catch (e) {
         Watch.Log("Db--------------------Error updating data: " + e.message + " Data: " + JSON.stringify(data) + " Where: " + where, 3);
     }
 };
-
 Database.prototype.insertAndGetId = function (table, data) {
     try {
+        Watch.Log('Step8--------------------P3_F090:' + data['P3_F090'].toString(), 3);
         this.insert(table, data);
         // 獲取新插入數據的ID
         var idQuery = "SELECT SCOPE_IDENTITY() AS NewId";
@@ -94,39 +93,44 @@ Database.prototype.insertAndGetId = function (table, data) {
         if (result.length > 0) {
             return result[0].NewId;
         } else {
-            Watch.Log("Db--------------------can not get newid", 3);
+            Watch.Log("Db--------------------can not get newid:" + data, 3);
             return null;
         }
     } catch (e) {
-        Watch.Log(e.message, 3);
+        Watch.Log('Db--------------------' + e.message, 3);
         return null;
     }
 };
-
 Database.prototype.updateAndGetId = function (table, data, where) {
     try {
         // 執行更新操作
-        this.update(table, data, where);
+        var set = [];
+        for (var key in data) {
+            set.push(key + "='" + data[key] + "'");
+            Watch.Log("Db--------------------table Data: " + key + "='" + data[key] + "'", 3);
+        }
+        var query = "UPDATE " + table + " SET " + set.join(", ") + " WHERE " + where + ";";
+        this.executeNonQuery(query);
+        Watch.Log("Db--------------------susses updating table" + table + " Data: " + query, 3);
         // 獲取剛剛更新的資料的ID，假設identifier是唯一標識符
         var idQuery = "SELECT id FROM " + table + " WHERE " + where + ";";
         var result = this.executeQuery(idQuery);
         if (result.length > 0) {
             return result[0].id;
         } else {
-            Watch.Log("can not get updated data", 3);
+            Watch.Log("Db--------------------can not get updated data", 3);
             return null;
         }
     } catch (e) {
-        Watch.Log("update data and get id error" + e.message, 3);
+        Watch.Log("Db--------------------update data and get id error" + e.message, 3);
         return null;
     }
 };
-
-Database.prototype.CheckAndInsert = function (table, data, checkWhere) {
+Database.prototype.checkAndInsert = function (table, data, checkWhere) {
     try {
         var SqlString = "SELECT COUNT(*) AS RecordCount FROM " + table + " Where " + checkWhere;
         var results = db.executeQuery(SqlString);
-        if(results[0].RecordCount == 0){
+        if (results[0].RecordCount == 0) {
             this.insert(table, data);
             // 獲取新插入數據的ID
             var idQuery = "SELECT SCOPE_IDENTITY() AS NewId";
@@ -134,25 +138,95 @@ Database.prototype.CheckAndInsert = function (table, data, checkWhere) {
             if (result.length > 0) {
                 return result[0].NewId;
             } else {
-                Watch.Log("can not get newid", 3);
+                Watch.Log("Db--------------------can not get newid", 3);
                 return null;
             }
-        }else{
+        } else {
             return 0;
         }
-        
+
     } catch (e) {
-        Watch.Log("Error inserting data: " + e + " Data: " + JSON.stringify(data), 3);
+        Watch.Log("Db--------------------Error inserting data: " + e + " Data: " + JSON.stringify(data), 3);
+    }
+};
+Database.prototype.executeSPQuery = function (query, hasParams, params) {
+    try {
+        var cmd = new ActiveXObject("ADODB.Command");
+        cmd.ActiveConnection = this.connection;
+        cmd.CommandText = query;
+        cmd.CommandType = 4; // adCmdStoredProc
+
+        if (hasParams && params) {
+            for (var i = 0; i < params.length; i++) {
+                cmd.Parameters.Append(cmd.CreateParameter(params[i].name, params[i].type, 1, params[i].size, params[i].value));
+            }
+        }
+
+        var rs = cmd.Execute();
+        var results = [];
+        while (!rs.EOF) {
+            var result = {};
+            for (var i = 0; i < rs.Fields.Count; i++) {
+                result[rs.Fields(i).Name] = rs.Fields(i).Value;
+            }
+            results.push(result);
+            rs.MoveNext();
+        }
+        rs.Close();
+        Watch.Log("execute Query Susses:" + query, 3);
+        return results;
+    } catch (e) {
+        Watch.Log("execute Query Error:" + e.message + " select :" + query, 3);
+        return [];
+    }
+};
+Database.prototype.executeSPNonQuery = function (query, hasParams, params) {
+    try {
+        var cmd = new ActiveXObject("ADODB.Command");
+        cmd.ActiveConnection = this.connection;
+        cmd.CommandText = query;
+        cmd.CommandType = 4; // adCmdStoredProc
+
+        if (hasParams && params) {
+            for (var i = 0; i < params.length; i++) {
+                cmd.Parameters.Append(cmd.CreateParameter(params[i].name, params[i].type, 1, params[i].size, params[i].value));
+            }
+        }
+
+        cmd.Execute();
+        Watch.Log("execute non Query Susses:" + query, 3);
+    } catch (e) {
+        Watch.Log("execute non Query Error:" + e.message + " select :" + query, 3);
+    }
+};
+Database.prototype.resultToJson = function (results) {
+    try {
+        return JSON.stringify(results, null, 2); // 格式化輸出 JSON
+    } catch (e) {
+        Watch.Log(e, 3)
+        return null;
+    }
+};
+Database.prototype.saveToFile = function (jsonData, filePath) {
+    try {
+        var fso = new ActiveXObject("Scripting.FileSystemObject");
+        var file = fso.CreateTextFile(filePath, true);
+        file.Write(jsonData);
+        file.Close();
+        //Watch.Log("CSV is Save：" + query, 3);
+    } catch (e) {
+        //Watch.Log("Save CSV Document is Error：" + e.message, 3);
     }
 };
 
-function P2_InsertAndUpdatePrintSub(date, CustNumber, SammonsNumber, OrderNumber, DeliveryNumber, InvNumber, P3_F090) {
-    var CheckSqlString = "SELECT COUNT(*) AS RecordCount FROM YunShin_Print Where CustNumber = '" + CustNumber + "' and SammonsNumber = '" + SammonsNumber + "' " + " and OrderNumber = '" + OrderNumber + "' and DeliveryNumber = '" + DeliveryNumber + "' and date = '" + date + "';";
+function P2_InsertAndUpdatePrintSub(SDate, CustNumber, SammonsNumber, OrderNumber, DeliveryNumber, InvNumber, P3_F090) {
+    var CheckSqlString = "SELECT COUNT(*) AS RecordCount FROM YunShin_Print Where CustNumber = '" + CustNumber + "' and SammonsNumber = '" + SammonsNumber + "' " + " and OrderNumber = '" + OrderNumber + "' and DeliveryNumber = '" + DeliveryNumber + "' and SDate = '" + SDate + "';";
     var results = db.executeQuery(CheckSqlString);
-    Watch.Log('YunShin_Print Count :' + results[0].RecordCount, 3);
+    Watch.Log('Stpe7--------------------P2 Start YunShin_Print Record Count:' + results[0].RecordCount, 3);
     var GetPrintID;
 
     if (results[0].RecordCount == 0) {
+        
         var Insert_YunShin_Print = {
             "CustNumber": CustNumber,
             "SammonsNumber": SammonsNumber,
@@ -160,25 +234,27 @@ function P2_InsertAndUpdatePrintSub(date, CustNumber, SammonsNumber, OrderNumber
             "DeliveryNumber": DeliveryNumber,
             "InvNumber": InvNumber,
             "P3_F090": P3_F090,
-            "date": date,
+            "SDate": SDate,
             "isPrint": false
         };
-        GetPrintID = db.insertAndGetId("YunShin_Print", Insert_YunShin_Print);
-        Watch.Log('insertAndGetId:' + GetPrintID, 3);
         
+        GetPrintID = db.insertAndGetId("YunShin_Print", Insert_YunShin_Print);
+        Watch.Log('Step8--------------------insert And Get Id:' + GetPrintID, 3);
+
     } else {
+        Watch.Log('Step8--------------------P3_F090:' + P3_F090, 3);
         var Update_YunShin_Print = {
             "P3_F090": P3_F090,
             "isPrint": false
         };
         var whereClause = " CustNumber = '" + CustNumber + "' and SammonsNumber = '" + SammonsNumber + "' and OrderNumber = '" + OrderNumber + "'  and DeliveryNumber = '" + DeliveryNumber + "'";
         GetPrintID = db.updateAndGetId("YunShin_Print", Update_YunShin_Print, whereClause);
-        Watch.Log('updateAndGetId:' + GetPrintID, 3);
+        Watch.Log('Step8--------------------update And Get Id:' + GetPrintID, 3);
     }
 
     //set select p_type name
     var P1 = DeliveryNumber;
-    var P2 = date + "_" + CustNumber + "_" + SammonsNumber + "_" + OrderNumber + "_" + DeliveryNumber;
+    var P2 = SDate + "_" + CustNumber + "_" + SammonsNumber + "_" + OrderNumber + "_" + DeliveryNumber;
     var P3 = CustNumber + "_" + SammonsNumber;
     var P4 = CustNumber + "_" + OrderNumber + "_" + DeliveryNumber;
     var P5 = CustNumber + "_" + SammonsNumber + "_" + DeliveryNumber;
@@ -186,20 +262,21 @@ function P2_InsertAndUpdatePrintSub(date, CustNumber, SammonsNumber, OrderNumber
     var P7 = InvNumber;
     //YunShin_Basic Group By
     var SqlStringSelectForP2 = "SELECT ID_Name,P_type,FileName,FileRoute,MIN(Page) AS StartPage,MAX(Page) AS EndPage FROM YunShin_Basic Where ID_Name IN ('"
-    + P1 + "','"
-    + P2 + "','"
-    + P3 + "','"
-    + P4 + "','"
-    + P5 + "','"
-    + P6 + "','"
-    + P7 + "')" +
-    " GROUP BY ID_Name, P_Type, FileName, FileRoute" +
-    " ORDER BY P_Type,ID_Name;";
-    Watch.Log('SqlString Select For P2:' + SqlStringSelectForP2, 3);
+        + P1 + "','"
+        + P2 + "','"
+        + P3 + "','"
+        + P4 + "','"
+        + P5 + "','"
+        + P6 + "','"
+        + P7 + "')" +
+        " GROUP BY ID_Name, P_Type, FileName, FileRoute" +
+        " ORDER BY P_Type,ID_Name;";
     //YunShin_Basic Select
     var results_P2 = db.executeQuery(SqlStringSelectForP2);
+    Watch.Log('Step9--------------------db Select Count for YunShin_Basic Group By:' + SqlStringSelectForP2, 3);
+
     if (results_P2.length > 0) {
-        Watch.Log('results_P2:' + results_P2.length, 3);
+        Watch.Log('Step10--------------------YunShin_Basic Group By Length:' + results_P2.length, 3);
         for (var j = 0; j < results_P2.length; j++) {
             //insert YunShin_PrintSub
             var Insert_YunShin_PrintSub = {
@@ -213,9 +290,9 @@ function P2_InsertAndUpdatePrintSub(date, CustNumber, SammonsNumber, OrderNumber
             };
             var where = "P_type = '" + results_P2[j].P_type + "' and ID_Name = '" + results_P2[j].ID_Name + "'";
             //return 0 代表已新增過了
-            var subid = db.CheckAndInsert("YunShin_PrintSub",Insert_YunShin_PrintSub,where);
-            if(subid == 0){
-                Watch.Log('!!!!!!!!!!!!!!!YunShin_PrintSub is inserted:' + subid, 3);
+            var subid = db.checkAndInsert("YunShin_PrintSub", Insert_YunShin_PrintSub, where);
+            if (subid == 0) {
+                Watch.Log('Step11--------------------YunShin_PrintSub is:' + subid + 'then Update YunShin_PrintSub', 3);
                 var Update_YunShin_PrintSub = {
                     "FileName": results_P2[j].FileName,
                     "StartPage": results_P2[j].StartPage,
@@ -224,9 +301,9 @@ function P2_InsertAndUpdatePrintSub(date, CustNumber, SammonsNumber, OrderNumber
                 };
                 var where = "P_type = '" + results_P2[j].P_type + "' and ID_Name = '" + results_P2[j].ID_Name + "'";
                 var subid = db.updateAndGetId("YunShin_PrintSub", Update_YunShin_PrintSub, where);
-                Watch.Log('!!!!!!!!!!!!!!!----YunShin_PrintSub Updated id:' + subid, 3);
-            }else{
-                Watch.Log('~~~~~~~~~~~~~~~YunShin_PrintSub insert id:' + subid, 3);
+                Watch.Log('Step11-1--------------------YunShin_PrintSub Updated id:' + subid, 3);
+            } else {
+                Watch.Log('Step11--------------------YunShin_PrintSub insert id:' + subid, 3);
             }
         }
     }
@@ -234,16 +311,17 @@ function P2_InsertAndUpdatePrintSub(date, CustNumber, SammonsNumber, OrderNumber
 
 
 //Run Process
-
+var s = Watch.GetOriginalFileName().replace('.pdf','');
+Watch.Log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!The job filename is: " + s, 3);
 var FileRoute = Watch.GetMetadataFilename().replace('.dat.meta', '') + '.json';
-Watch.Log(FileRoute, 3)
+Watch.Log("Step1--------------------get Json File Route" + FileRoute, 3)
 var fso = new ActiveXObject("Scripting.FileSystemObject");
 
 var JsonFile = fso.OpenTextFile(FileRoute, 1);
 
 var JsonContent = JsonFile.ReadAll();
 JsonContent = JSON.parse(JsonContent);
-Watch.Log(JsonContent, 3)
+Watch.Log("Step2--------------------Get Json Data" + JsonContent, 3)
 
 JsonFile.Close();
 
@@ -256,16 +334,15 @@ for (var i = 0; i < JsonContent.length; i++) {
 var pageLength = JArray.length;
 
 
-Watch.Log('matedata pageLength:' + pageLength, 3);
+Watch.Log('Step3--------------------Page length:' + pageLength, 3);
 //ADODB Connection String
 var ConnectionString = "Provider=SQLOLEDB;Data Source=localhost\\SQLEXPRESS;Initial Catalog=YunShin;Integrated Security=SSPI;";
 
 
 for (var i = 0; i < pageLength; i++) {
-
     var P_Type = JArray[i].P_type;
     var Page = JArray[i].Page;
-    Watch.Log('matedata Page Index:' + Page, 3);
+    Watch.Log('Step4--------------------Page Index:' + Page, 3);
     var FileName = Watch.GetVariable("FileID");
 
     var ID_Name = '';
@@ -276,9 +353,8 @@ for (var i = 0; i < pageLength; i++) {
     var OrderNumber = '';
     var DeliveryNumber = '';
     var InvNumber = '';
-    var date;
-    var P3_F090;
-
+    var SDate;
+    var P3_F090 = false;
     switch (P_Type) {
         case "P1":
             DeliveryNumber = JArray[i].DeliveryNumber;
@@ -295,14 +371,15 @@ for (var i = 0; i < pageLength; i++) {
             OrderNumber = JArray[i].OrderNumber;
             DeliveryNumber = JArray[i].DeliveryNumber;
             InvNumber = JArray[i].InvNumber;
-            date = JArray[i].Date;
-            Watch.Log('---------------------------------------------date get' + date, 3);
-            P3_F090 = JArray[i].IsGroup;
-            ID_Name = date + "_" + CSOD;
+            SDate = JArray[i].Date;
+            Watch.Log("JArray[i].IsGroup:" + JArray[i].IsGroup,3);
+            P3_F090 = JArray[i].IsGroup == 'true' ? 1 : 0;
+            Watch.Log("P3_F090:" + P3_F090,3);
+            ID_Name = SDate + "_" + CSOD;
             if (i + 1 < pageLength) {
                 var CSOD_next = JArray[i + 1].CSOD;
-                var date_next = JArray[i + 1].date;
-                ID_Name_next = date_next + "_" + CSOD_next;
+                var SDate_next = JArray[i + 1].Date;
+                ID_Name_next = SDate_next + "_" + CSOD_next;
             }
             break;
         case "P3":
@@ -360,14 +437,14 @@ for (var i = 0; i < pageLength; i++) {
             }
             break;
     }
+    Watch.Log('Step5--------------------Page type:' + P_Type, 3);
     //ADODB DB INIT
     var db = new Database();
     try {
         // DB executeQuery
-
-        var SqlString = "SELECT COUNT(*) AS RecordCount FROM YunShin_Basic Where ID_Name = '" + ID_Name + "' and P_Type = '" + P_Type + "'" + " and Page = " + Page + ";";
+        var SqlString = "SELECT COUNT(*) AS RecordCount FROM YunShin_Basic Where ID_Name = '" + ID_Name + "' and P_Type = '" + P_Type + "'" + " and Page = " + Page;
         var results = db.executeQuery(SqlString);
-        Watch.Log(results[0].RecordCount, 3);
+        Watch.Log("Step6--------------------db select YunShin_Basic data count:" + results[0].RecordCount, 3);
         if (results[0].RecordCount == 0) {
             var Insert_YunShin_Basic = {
                 "ID_Name": ID_Name,
@@ -377,8 +454,15 @@ for (var i = 0; i < pageLength; i++) {
                 "Page": Page
             };
             db.insert("YunShin_Basic", Insert_YunShin_Basic);
+            Watch.Log("Step6-1--------------------Insert_YunShin_Basic:" + Insert_YunShin_Basic, 3);
             if (P_Type == "P2") {
-                P2_InsertAndUpdatePrintSub(date, CustNumber, SammonsNumber, OrderNumber, DeliveryNumber, InvNumber, P3_F090);
+                Watch.Log("Step6-2--------------------Insert_YunShin_Basic:" + Insert_YunShin_Basic, 3);
+                P2_InsertAndUpdatePrintSub(SDate, CustNumber, SammonsNumber, OrderNumber, DeliveryNumber, InvNumber, JArray[i].IsGroup);
+                var WhereParams = [{name:'FileName',type:200,size:255,value:FileName}];
+                var results_Query = db.executeSPQuery("YunShinPrint_OrderByCustNumber", true ,WhereParams);
+                var resultsToJson = db.resultToJson(results_Query);
+                Watch.Log(resultsToJson, 3);
+                db.saveToFile(resultsToJson, 'C:\\Project\\YS\\out\\Step1\\' + s + '.json');
             }
         } else {
             var updateFileName = {
@@ -387,18 +471,23 @@ for (var i = 0; i < pageLength; i++) {
             };
             var whereClause = "ID_Name='" + ID_Name + "' and P_Type = '" + P_Type + "'";
             db.update("YunShin_Basic", updateFileName, whereClause);
+            Watch.Log("Step6-1--------------------Update_YunShin_Basic" + results[0].RecordCount, 3);
+
             if (P_Type == "P2") {
-                P2_InsertAndUpdatePrintSub(date, CustNumber, SammonsNumber, OrderNumber, DeliveryNumber, InvNumber, P3_F090);
+                Watch.Log("Step6-2--------------------Insert_YunShin_Basic:" + Insert_YunShin_Basic, 3);
+                P2_InsertAndUpdatePrintSub(SDate, CustNumber, SammonsNumber, OrderNumber, DeliveryNumber, InvNumber, JArray[i].IsGroup);
+                var WhereParams = [{name:'FileName',type:200,size:255,value:FileName}];
+                var results_Query = db.executeSPQuery("YunShinPrint_OrderByCustNumber", true , WhereParams);
+                var resultsToJson = db.resultToJson(results_Query);
+                Watch.Log(resultsToJson, 3);
+                db.saveToFile(resultsToJson, 'C:\\Project\\YS\\out\\Step1\\' + s + '.json');
             }
         }
-
     } catch (error) {
-        Watch.Log("Error:" + error.message, 3);
+        Watch.Log("Log--------------------Error:" + error.message, 3);
     } finally {
         db.close();
     }
-
-
 }
 
 
