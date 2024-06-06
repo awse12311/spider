@@ -22,8 +22,9 @@ Database.prototype.log = function (message) {
     Watch.Log("Db--------------------" + message, 3);
 };
 Database.prototype.executeQuery = function (query) {
+    var rs = null
     try {
-        var rs = new ActiveXObject("ADODB.Recordset");
+        rs = new ActiveXObject("ADODB.Recordset");
         rs.Open(query, this.connection);
         var results = [];
         while (!rs.EOF) {
@@ -40,6 +41,11 @@ Database.prototype.executeQuery = function (query) {
     } catch (e) {
         Watch.Log("Db--------------------Error executing query: " + e + " Query: " + query, 3);
         return [];
+    }finally{
+        if(rs)
+        {
+            rs.Close();
+        }
     }
 };
 Database.prototype.executeNonQuery = function (query) {
@@ -58,7 +64,7 @@ Database.prototype.insert = function (table, data) {
         var keys = [], values = [];
         for (var key in data) {
             keys.push(key);
-            values.push("'" + data[key] + "'");
+            values.push("'" + data[key].replace(/'/g,"''") + "'");
             Watch.Log('Db--------------------data:' + key+'_'+data[key], 3);
         }
         var query = "INSERT INTO " + table + " (" + keys.join(", ") + ") VALUES (" + values.join(", ") + ")";
@@ -72,7 +78,7 @@ Database.prototype.update = function (table, data, where) {
         var set = [];
         
         for (var key in data) {
-            set.push(key + "='" + data[key] + "'");
+            set.push(key + "='" + data[key].replace(/'/g,"''") + "'");
             Watch.Log("Db--------------------table Data: " + key + "='" + data[key] + "'", 3);
         }
         var query = "UPDATE " + table + " SET " + set.join(", ") + " WHERE " + where + ";";
