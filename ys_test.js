@@ -26,3 +26,4 @@ xhr.onerror = function() {
 
 // 发送请求
 xhr.send();
+
